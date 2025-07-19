@@ -10,7 +10,7 @@ import uuid
 from typing import Dict, List, Optional
 from pydantic import BaseModel
 import asyncio
-from emergentintegrations.llm.chat import LlmChat, UserMessage
+from emergent.llm.chat import LlmChat, UserMessage
 
 # Enhanced logging
 logging.basicConfig(level=logging.INFO)
