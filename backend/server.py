@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends, Request
-from fastapi.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.middleware.gzip import GZipMiddleware
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
