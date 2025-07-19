@@ -289,7 +289,10 @@ async def save_program(program: ElectoralProgram):
         program_dict['id'] = str(uuid.uuid4())
         program_dict['created_at'] = datetime.utcnow()
         
-        programs_collection.insert_one(program_dict)
+        result = programs_collection.insert_one(program_dict)
+        
+        # Remove MongoDB _id from response
+        program_dict.pop('_id', None)
         
         return {"success": True, "program": program_dict}
     except Exception as e:
