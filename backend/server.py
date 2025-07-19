@@ -175,7 +175,10 @@ async def create_candidate(candidate: Candidate):
         candidate_dict['id'] = str(uuid.uuid4())
         candidate_dict['created_at'] = datetime.utcnow()
         
-        candidates_collection.insert_one(candidate_dict)
+        result = candidates_collection.insert_one(candidate_dict)
+        
+        # Remove MongoDB _id from response
+        candidate_dict.pop('_id', None)
         
         return {"success": True, "candidate": candidate_dict}
     except Exception as e:
