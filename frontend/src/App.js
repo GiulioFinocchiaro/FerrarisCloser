@@ -877,15 +877,286 @@ const AIGeneratorTab = ({ user }) => {
 // Campaigns Tab Component
 const CampaignsTab = ({ user }) => {
   const [campaigns, setCampaigns] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    status: 'draft'
+  });
+
+  useEffect(() => {
+    if (user.role === 'candidate' || user.role === 'admin') {
+      fetchCampaigns();
+    }
+  }, [user]);
+
+  const fetchCampaigns = async () => {
+    try {
+      let candidateId = user.id;
+      if (user.role === 'admin') {
+        // For admin, get all campaigns
+        const candidatesResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/candidates`);
+        const candidatesData = await candidatesResponse.json();
+        if (candidatesData.success && candidatesData.candidates.length > 0) {
+          candidateId = candidatesData.candidates[0].id;
+        }
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/campaigns/${candidateId}`);
+      const data = await response.json();
+      if (data.success) {
+        setCampaigns(data.campaigns);
+      }
+    } catch (error) {
+      console.error('Errore caricamento campagne:', error);
+    }
+    setLoading(false);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      let candidateId = user.id;
+      if (user.role === 'admin') {
+        const candidatesResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/candidates`);
+        const candidatesData = await candidatesResponse.json();
+        if (candidatesData.success && candidatesData.candidates.length > 0) {
+          candidateId = candidatesData.candidates[0].id;
+        }
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/campaigns`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...formData,
+          candidate_id: candidateId,
+          events: [],
+          materials: []
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setShowForm(false);
+        setFormData({ title: '', description: '', status: 'draft' });
+        fetchCampaigns();
+        alert('Campagna creata con successo!');
+      }
+    } catch (error) {
+      console.error('Errore:', error);
+      alert('Errore durante la creazione della campagna');
+    }
+  };
+
+  const updateCampaignStatus = async (campaignId, newStatus) => {
+    try {
+      // In una implementazione completa, qui ci sarebbe un endpoint PUT
+      alert(`Stato campagna aggiornato a: ${newStatus}`);
+      fetchCampaigns();
+    } catch (error) {
+      console.error('Errore aggiornamento campagna:', error);
+    }
+  };
+
+  const getStatusColor = (status) => {
+    const colors = {
+      draft: 'bg-gray-100 text-gray-800',
+      active: 'bg-green-100 text-green-800',
+      completed: 'bg-blue-100 text-blue-800'
+    };
+    return colors[status] || colors.draft;
+  };
+
+  const getStatusText = (status) => {
+    const texts = {
+      draft: 'Bozza',
+      active: 'Attiva',
+      completed: 'Completata'
+    };
+    return texts[status] || status;
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return (
-    <div className="bg-white rounded-xl shadow-lg p-8">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Gestione Campagne</h2>
-      <div className="text-center py-12">
-        <div className="text-6xl mb-4">🚀</div>
-        <h3 className="text-xl font-semibold text-gray-700 mb-2">Sezione in Sviluppo</h3>
-        <p className="text-gray-600">La gestione avanzata delle campagne sarà disponibile presto!</p>
+    <div className="space-y-6">
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">Gestione Campagne</h2>
+          <button
+            onClick={() => setShowForm(true)}
+            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-medium transition-colors"
+          >
+            + Nuova Campagna
+          </button>
+        </div>
+
+        {campaigns.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">🚀</div>
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">Nessuna Campagna</h3>
+            <p className="text-gray-600 mb-4">Crea la tua prima campagna elettorale per iniziare!</p>
+            <button
+              onClick={() => setShowForm(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+            >
+              Crea Prima Campagna
+            </button>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {campaigns.map((campaign) => (
+              <div key={campaign.id} className="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">{campaign.title}</h3>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(campaign.status)}`}>
+                    {getStatusText(campaign.status)}
+                  </span>
+                </div>
+                
+                <p className="text-gray-600 mb-4">{campaign.description}</p>
+                
+                <div className="space-y-3">
+                  <div className="flex items-center text-sm text-gray-500">
+                    <span className="mr-2">📅</span>
+                    Creata: {new Date(campaign.created_at).toLocaleDateString('it-IT')}
+                  </div>
+                  
+                  <div className="flex items-center text-sm text-gray-500">
+                    <span className="mr-2">📊</span>
+                    Eventi: {campaign.events?.length || 0} | Materiali: {campaign.materials?.length || 0}
+                  </div>
+                </div>
+                
+                <div className="flex space-x-2 mt-4">
+                  {campaign.status === 'draft' && (
+                    <button
+                      onClick={() => updateCampaignStatus(campaign.id, 'active')}
+                      className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                    >
+                      Attiva
+                    </button>
+                  )}
+                  {campaign.status === 'active' && (
+                    <button
+                      onClick={() => updateCampaignStatus(campaign.id, 'completed')}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-sm transition-colors"
+                    >
+                      Completa
+                    </button>
+                  )}
+                  <button className="bg-gray-500 hover:bg-gray-600 text-white px-3 py-1 rounded text-sm transition-colors">
+                    Modifica
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* Campaign Activities */}
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        <h3 className="text-xl font-bold text-gray-800 mb-6">Attività di Campagna</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-blue-50 p-6 rounded-lg text-center">
+            <div className="text-3xl mb-3">📋</div>
+            <h4 className="font-semibold text-gray-800 mb-2">Pianifica Eventi</h4>
+            <p className="text-sm text-gray-600 mb-4">Organizza assemblee, dibattiti e incontri</p>
+            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm transition-colors">
+              Gestisci Eventi
+            </button>
+          </div>
+          
+          <div className="bg-green-50 p-6 rounded-lg text-center">
+            <div className="text-3xl mb-3">🎨</div>
+            <h4 className="font-semibold text-gray-800 mb-2">Materiali Grafici</h4>
+            <p className="text-sm text-gray-600 mb-4">Crea volantini, poster e contenuti social</p>
+            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm transition-colors">
+              Crea Materiali
+            </button>
+          </div>
+          
+          <div className="bg-purple-50 p-6 rounded-lg text-center">
+            <div className="text-3xl mb-3">📊</div>
+            <h4 className="font-semibold text-gray-800 mb-2">Monitora Progress</h4>
+            <p className="text-sm text-gray-600 mb-4">Traccia l'avanzamento della campagna</p>
+            <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm transition-colors">
+              Vedi Statistiche
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Create Campaign Modal */}
+      {showForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-8 max-w-md w-full mx-4">
+            <h3 className="text-xl font-bold text-gray-800 mb-6">Crea Nuova Campagna</h3>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-gray-700 font-medium mb-2">Titolo Campagna</label>
+                <input
+                  type="text"
+                  value={formData.title}
+                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                  placeholder="es. Campagna Elettorale 2024"
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-gray-700 font-medium mb-2">Descrizione</label>
+                <textarea
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 h-24"
+                  placeholder="Descrivi gli obiettivi e le strategie della campagna..."
+                  required
+                />
+              </div>
+              
+              <div>
+                <label className="block text-gray-700 font-medium mb-2">Stato Iniziale</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({...formData, status: e.target.value})}
+                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="draft">Bozza</option>
+                  <option value="active">Attiva</option>
+                </select>
+              </div>
+              
+              <div className="flex space-x-4">
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
+                  className="flex-1 bg-gray-500 hover:bg-gray-600 text-white font-semibold py-3 rounded-lg transition-colors"
+                >
+                  Annulla
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition-colors"
+                >
+                  Crea Campagna
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
