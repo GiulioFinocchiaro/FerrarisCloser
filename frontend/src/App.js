@@ -1081,32 +1081,271 @@ const CampaignsTab = ({ user }) => {
         <h3 className="text-xl font-bold text-gray-800 mb-6">Attività di Campagna</h3>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="bg-blue-50 p-6 rounded-lg text-center">
-            <div className="text-3xl mb-3">📋</div>
-            <h4 className="font-semibold text-gray-800 mb-2">Pianifica Eventi</h4>
-            <p className="text-sm text-gray-600 mb-4">Organizza assemblee, dibattiti e incontri</p>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm transition-colors">
-              Gestisci Eventi
+          <div className="bg-blue-50 p-6 rounded-lg">
+            <div className="text-3xl mb-3 text-center">📋</div>
+            <h4 className="font-semibold text-gray-800 mb-2 text-center">Pianifica Eventi</h4>
+            <p className="text-sm text-gray-600 mb-4 text-center">Organizza assemblee, dibattiti e incontri</p>
+            
+            <div className="space-y-3">
+              <div className="bg-white p-3 rounded border-l-4 border-blue-500">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-sm">📅 Assemblea di Classe</span>
+                  <span className="text-xs text-gray-500">25 Gen</span>
+                </div>
+                <p className="text-xs text-gray-600 mt-1">Presentazione programma elettorale</p>
+              </div>
+              
+              <div className="bg-white p-3 rounded border-l-4 border-green-500">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-sm">🗣️ Dibattito Pubblico</span>
+                  <span className="text-xs text-gray-500">28 Gen</span>
+                </div>
+                <p className="text-xs text-gray-600 mt-1">Confronto con altri candidati</p>
+              </div>
+              
+              <div className="bg-white p-3 rounded border-l-4 border-purple-500">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-sm">🎤 Incontro Studenti</span>
+                  <span className="text-xs text-gray-500">30 Gen</span>
+                </div>
+                <p className="text-xs text-gray-600 mt-1">Q&A con gli studenti</p>
+              </div>
+            </div>
+            
+            <button 
+              onClick={() => {
+                const newEvent = prompt("Nome evento:");
+                const date = prompt("Data (es. 2 Feb):");
+                if (newEvent && date) {
+                  alert(`Evento "${newEvent}" programmato per il ${date}!`);
+                }
+              }}
+              className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm transition-colors"
+            >
+              + Aggiungi Evento
             </button>
           </div>
           
-          <div className="bg-green-50 p-6 rounded-lg text-center">
-            <div className="text-3xl mb-3">🎨</div>
-            <h4 className="font-semibold text-gray-800 mb-2">Materiali Grafici</h4>
-            <p className="text-sm text-gray-600 mb-4">Crea volantini, poster e contenuti social</p>
-            <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm transition-colors">
-              Crea Materiali
+          <div className="bg-green-50 p-6 rounded-lg">
+            <div className="text-3xl mb-3 text-center">🎨</div>
+            <h4 className="font-semibold text-gray-800 mb-2 text-center">Materiali Grafici</h4>
+            <p className="text-sm text-gray-600 mb-4 text-center">Crea volantini, poster e contenuti social</p>
+            
+            <div className="space-y-3">
+              <div className="bg-white p-3 rounded border-l-4 border-green-500">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-sm">📄 Volantini</span>
+                  <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">Pronto</span>
+                </div>
+                <p className="text-xs text-gray-600 mt-1">Design principale per distribuzione</p>
+              </div>
+              
+              <div className="bg-white p-3 rounded border-l-4 border-yellow-500">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-sm">🏷️ Poster A3</span>
+                  <span className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded">In corso</span>
+                </div>
+                <p className="text-xs text-gray-600 mt-1">Poster per bacheche scolastiche</p>
+              </div>
+              
+              <div className="bg-white p-3 rounded border-l-4 border-blue-500">
+                <div className="flex justify-between items-center">
+                  <span className="font-medium text-sm">📱 Post Social</span>
+                  <span className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">Pianificato</span>
+                </div>
+                <p className="text-xs text-gray-600 mt-1">Contenuti per Instagram e WhatsApp</p>
+              </div>
+            </div>
+            
+            <button 
+              onClick={() => {
+                const materialTypes = ["Volantino", "Poster", "Post Social", "Striscione", "Adesivo"];
+                const selectedType = prompt(`Tipo materiale (${materialTypes.join(", ")}):`);
+                if (selectedType) {
+                  alert(`Richiesta creazione "${selectedType}" inviata al team grafico!`);
+                }
+              }}
+              className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded text-sm transition-colors"
+            >
+              + Nuovo Materiale
             </button>
           </div>
           
-          <div className="bg-purple-50 p-6 rounded-lg text-center">
-            <div className="text-3xl mb-3">📊</div>
-            <h4 className="font-semibold text-gray-800 mb-2">Monitora Progress</h4>
-            <p className="text-sm text-gray-600 mb-4">Traccia l'avanzamento della campagna</p>
-            <button className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm transition-colors">
-              Vedi Statistiche
+          <div className="bg-purple-50 p-6 rounded-lg">
+            <div className="text-3xl mb-3 text-center">📊</div>
+            <h4 className="font-semibold text-gray-800 mb-2 text-center">Monitora Progress</h4>
+            <p className="text-sm text-gray-600 mb-4 text-center">Traccia l'avanzamento della campagna</p>
+            
+            <div className="space-y-4">
+              <div>
+                <div className="flex justify-between text-sm mb-1">
+                  <span className="font-medium">Completamento Campagna</span>
+                  <span className="text-purple-600">75%</span>
+                </div>
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-purple-600 h-2 rounded-full" style={{width: '75%'}}></div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-3 text-center">
+                <div className="bg-white p-3 rounded">
+                  <div className="text-lg font-bold text-purple-600">12</div>
+                  <div className="text-xs text-gray-600">Eventi Pianificati</div>
+                </div>
+                <div className="bg-white p-3 rounded">
+                  <div className="text-lg font-bold text-green-600">8</div>
+                  <div className="text-xs text-gray-600">Materiali Creati</div>
+                </div>
+                <div className="bg-white p-3 rounded">
+                  <div className="text-lg font-bold text-blue-600">245</div>
+                  <div className="text-xs text-gray-600">Studenti Raggiunti</div>
+                </div>
+                <div className="bg-white p-3 rounded">
+                  <div className="text-lg font-bold text-orange-600">18</div>
+                  <div className="text-xs text-gray-600">Giorni Rimanenti</div>
+                </div>
+              </div>
+              
+              <div className="bg-white p-3 rounded border-l-4 border-purple-500">
+                <div className="text-sm font-medium mb-1">🎯 Obiettivo Settimanale</div>
+                <div className="text-xs text-gray-600">Raggiungere 50+ studenti con volantinaggio</div>
+                <div className="flex justify-between items-center mt-2">
+                  <div className="text-xs text-gray-500">Progresso: 32/50</div>
+                  <div className="text-xs text-green-600">64% ✓</div>
+                </div>
+              </div>
+            </div>
+            
+            <button 
+              onClick={() => {
+                const reports = [
+                  "📈 Report Settimanale:\n• 32 studenti raggiunti\n• 3 eventi completati\n• 2 materiali distribuiti",
+                  "📊 Metriche Campagna:\n• Engagement: +15%\n• Visibilità: Alta\n• Feedback: Molto positivo",
+                  "🎯 Prossimi Obiettivi:\n• Completare volantinaggio\n• Organizzare assemblea\n• Preparare dibattito finale"
+                ];
+                const randomReport = reports[Math.floor(Math.random() * reports.length)];
+                alert(randomReport);
+              }}
+              className="w-full mt-4 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded text-sm transition-colors"
+            >
+              📈 Vedi Report Dettagliato
             </button>
           </div>
+        </div>
+      </div>
+
+      {/* Campaign Timeline */}
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        <h3 className="text-xl font-bold text-gray-800 mb-6">Timeline Campagna Elettorale</h3>
+        
+        <div className="relative">
+          <div className="absolute left-6 top-0 bottom-0 w-0.5 bg-blue-200"></div>
+          
+          <div className="space-y-6">
+            <div className="flex items-start">
+              <div className="flex-shrink-0 w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
+                ✓
+              </div>
+              <div className="ml-4 flex-1">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-semibold text-gray-800">Registrazione Candidatura</h4>
+                  <span className="text-sm text-gray-500">15 Gen 2024</span>
+                </div>
+                <p className="text-sm text-gray-600 mt-1">Candidatura ufficialmente presentata e accettata</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start">
+              <div className="flex-shrink-0 w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
+                ✓
+              </div>
+              <div className="ml-4 flex-1">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-semibold text-gray-800">Creazione Programma Elettorale</h4>
+                  <span className="text-sm text-gray-500">18 Gen 2024</span>
+                </div>
+                <p className="text-sm text-gray-600 mt-1">Programma generato con AI e personalizzato</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start">
+              <div className="flex-shrink-0 w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                🔄
+              </div>
+              <div className="ml-4 flex-1">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-semibold text-gray-800">Campagna Attiva</h4>
+                  <span className="text-sm text-gray-500">20 Gen - 5 Feb</span>
+                </div>
+                <p className="text-sm text-gray-600 mt-1">Fase di campagna elettorale e incontri con studenti</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start">
+              <div className="flex-shrink-0 w-12 h-12 bg-gray-400 rounded-full flex items-center justify-center text-white font-bold">
+                📅
+              </div>
+              <div className="ml-4 flex-1">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-semibold text-gray-800">Elezioni</h4>
+                  <span className="text-sm text-gray-500">6-7 Feb 2024</span>
+                </div>
+                <p className="text-sm text-gray-600 mt-1">Votazioni ufficiali per rappresentanti studenteschi</p>
+              </div>
+            </div>
+            
+            <div className="flex items-start">
+              <div className="flex-shrink-0 w-12 h-12 bg-gray-400 rounded-full flex items-center justify-center text-white font-bold">
+                🏆
+              </div>
+              <div className="ml-4 flex-1">
+                <div className="flex justify-between items-center">
+                  <h4 className="font-semibold text-gray-800">Risultati e Insediamento</h4>
+                  <span className="text-sm text-gray-500">8 Feb 2024</span>
+                </div>
+                <p className="text-sm text-gray-600 mt-1">Pubblicazione risultati e inizio mandato</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Actions */}
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        <h3 className="text-xl font-bold text-gray-800 mb-6">Azioni Rapide</h3>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <button 
+            onClick={() => alert("Funzione di condivisione programma sui social media")}
+            className="bg-blue-500 hover:bg-blue-600 text-white p-4 rounded-lg text-center transition-colors"
+          >
+            <div className="text-2xl mb-2">📱</div>
+            <div className="text-sm font-medium">Condividi Programma</div>
+          </button>
+          
+          <button 
+            onClick={() => alert("Lista contatti studenti per newsletter campagna")}
+            className="bg-green-500 hover:bg-green-600 text-white p-4 rounded-lg text-center transition-colors"
+          >
+            <div className="text-2xl mb-2">📧</div>
+            <div className="text-sm font-medium">Invia Newsletter</div>
+          </button>
+          
+          <button 
+            onClick={() => alert("Sondaggio feedback tra studenti sulla campagna")}
+            className="bg-purple-500 hover:bg-purple-600 text-white p-4 rounded-lg text-center transition-colors"
+          >
+            <div className="text-2xl mb-2">📊</div>
+            <div className="text-sm font-medium">Crea Sondaggio</div>
+          </button>
+          
+          <button 
+            onClick={() => alert("Sistema di promemoria per eventi importanti")}
+            className="bg-orange-500 hover:bg-orange-600 text-white p-4 rounded-lg text-center transition-colors"
+          >
+            <div className="text-2xl mb-2">⏰</div>
+            <div className="text-sm font-medium">Imposta Reminder</div>
+          </button>
         </div>
       </div>
 
