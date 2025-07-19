@@ -1300,6 +1300,315 @@ const CandidatesTab = ({ candidates, fetchCandidates, user }) => {
   );
 };
 
+// Programs Tab Component
+const ProgramsTab = ({ user }) => {
+  const [programs, setPrograms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedProgram, setSelectedProgram] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    fetchPrograms();
+  }, [user]);
+
+  const fetchPrograms = async () => {
+    try {
+      let candidateId = user.id;
+      if (user.role === 'admin') {
+        // For admin, get programs from first candidate
+        const candidatesResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/candidates`);
+        const candidatesData = await candidatesResponse.json();
+        if (candidatesData.success && candidatesData.candidates.length > 0) {
+          candidateId = candidatesData.candidates[0].id;
+        }
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/programs/${candidateId}`);
+      const data = await response.json();
+      if (data.success) {
+        setPrograms(data.programs);
+      }
+    } catch (error) {
+      console.error('Errore caricamento programmi:', error);
+    }
+    setLoading(false);
+  };
+
+  const handleSaveProgram = async (programContent) => {
+    try {
+      let candidateId = user.id;
+      if (user.role === 'admin') {
+        const candidatesResponse = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/candidates`);
+        const candidatesData = await candidatesResponse.json();
+        if (candidatesData.success && candidatesData.candidates.length > 0) {
+          candidateId = candidatesData.candidates[0].id;
+        }
+      }
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/programs`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          candidate_id: candidateId,
+          title: `Programma Elettorale ${new Date().toLocaleDateString('it-IT')}`,
+          content: programContent,
+          generated_by_ai: true
+        })
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        fetchPrograms();
+        alert('Programma salvato con successo!');
+      }
+    } catch (error) {
+      console.error('Errore salvataggio programma:', error);
+      alert('Errore durante il salvataggio');
+    }
+  };
+
+  const viewProgram = (program) => {
+    setSelectedProgram(program);
+    setShowModal(true);
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-gray-800">I Tuoi Programmi Elettorali</h2>
+          <div className="flex space-x-3">
+            <button
+              onClick={() => {
+                // Simple program template
+                const templateProgram = `PROGRAMMA ELETTORALE
+
+PRESENTAZIONE
+Mi chiamo ${user.name} e mi candido per rappresentare tutti gli studenti della nostra scuola.
+
+VISIONE
+La mia visione è quella di una scuola più inclusiva, moderna e attenta alle esigenze di ogni studente.
+
+PROPOSTE PRINCIPALI
+1. Miglioramento dei servizi scolastici
+2. Maggiore partecipazione studentesca
+3. Eventi e attività extracurriculari
+4. Supporto allo studio e al benessere
+5. Comunicazione più efficace
+
+CONCLUSIONE
+Insieme possiamo costruire una scuola migliore per tutti. Il vostro voto è il primo passo verso il cambiamento!`;
+                
+                handleSaveProgram(templateProgram);
+              }}
+              className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg font-medium transition-colors"
+            >
+              + Template Base
+            </button>
+          </div>
+        </div>
+
+        {programs.length === 0 ? (
+          <div className="text-center py-12">
+            <div className="text-6xl mb-4">📄</div>
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">Nessun Programma Salvato</h3>
+            <p className="text-gray-600 mb-6">Crea il tuo primo programma elettorale utilizzando il generatore AI o un template base</p>
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={() => window.location.href = '#ai-program'}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                🤖 Usa Generatore AI
+              </button>
+              <button
+                onClick={() => {
+                  const templateProgram = `PROGRAMMA ELETTORALE - ${user.name}
+
+🎯 PRESENTAZIONE
+Mi chiamo ${user.name} e mi candido per rappresentare tutti gli studenti della nostra scuola con passione, dedizione e trasparenza.
+
+🌟 LA MIA VISIONE
+Credo in una scuola dove ogni studente si senta ascoltato, valorizzato e parte attiva della comunità scolastica.
+
+📋 PROPOSTE PRINCIPALI
+
+1. 🏫 MIGLIORAMENTO STRUTTURE E SERVIZI
+   - Migliorare gli spazi comuni e le aule
+   - Potenziare i servizi di mensa e trasporti
+
+2. 🎭 VITA STUDENTESCA ATTIVA
+   - Organizzare più eventi culturali e ricreativi
+   - Promuovere attività sportive e artistiche
+
+3. 💬 COMUNICAZIONE E PARTECIPAZIONE
+   - Creare canali diretti tra studenti e dirigenza
+   - Organizzare assemblee mensili tematiche
+
+4. 📚 SUPPORTO DIDATTICO
+   - Implementare corsi di recupero e potenziamento
+   - Creare spazi di studio collaborativo
+
+5. 🌱 SOSTENIBILITÀ E INNOVAZIONE
+   - Promuovere progetti green a scuola
+   - Digitalizzare i processi amministrativi
+
+🚀 INSIEME VERSO IL FUTURO
+Con la vostra fiducia, lavorerò ogni giorno per realizzare questi obiettivi e costruire insieme una scuola migliore.
+
+Il vostro voto è il primo passo verso il cambiamento che tutti desideriamo!`;
+                  
+                  handleSaveProgram(templateProgram);
+                }}
+                className="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+              >
+                📄 Crea Template
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {programs.map((program) => (
+              <div key={program.id} className="bg-gray-50 rounded-lg p-6 hover:shadow-md transition-shadow">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">{program.title}</h3>
+                  {program.generated_by_ai && (
+                    <span className="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-xs font-medium">
+                      🤖 AI Generated
+                    </span>
+                  )}
+                </div>
+                
+                <div className="text-gray-600 text-sm mb-4 line-clamp-3">
+                  {program.content.substring(0, 150)}...
+                </div>
+                
+                <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                  <span>📅 Creato: {new Date(program.created_at).toLocaleDateString('it-IT')}</span>
+                  <span>📄 {program.content.split(' ').length} parole</span>
+                </div>
+                
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => viewProgram(program)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded text-sm transition-colors"
+                  >
+                    👁️ Visualizza
+                  </button>
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(program.content);
+                      alert('Programma copiato negli appunti!');
+                    }}
+                    className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded text-sm transition-colors"
+                  >
+                    📋 Copia
+                  </button>
+                  <button
+                    onClick={() => {
+                      const blob = new Blob([program.content], { type: 'text/plain' });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement('a');
+                      a.href = url;
+                      a.download = `${program.title}.txt`;
+                      a.click();
+                    }}
+                    className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded text-sm transition-colors"
+                  >
+                    💾 Download
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Program Statistics */}
+      <div className="bg-white rounded-xl shadow-lg p-8">
+        <h3 className="text-xl font-bold text-gray-800 mb-6">Statistiche Programmi</h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="bg-blue-50 p-6 rounded-lg text-center">
+            <div className="text-3xl font-bold text-blue-600">{programs.length}</div>
+            <div className="text-gray-600">Programmi Totali</div>
+          </div>
+          
+          <div className="bg-purple-50 p-6 rounded-lg text-center">
+            <div className="text-3xl font-bold text-purple-600">
+              {programs.filter(p => p.generated_by_ai).length}
+            </div>
+            <div className="text-gray-600">Generati con AI</div>
+          </div>
+          
+          <div className="bg-green-50 p-6 rounded-lg text-center">
+            <div className="text-3xl font-bold text-green-600">
+              {programs.reduce((total, p) => total + p.content.split(' ').length, 0)}
+            </div>
+            <div className="text-gray-600">Parole Totali</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Program View Modal */}
+      {showModal && selectedProgram && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-4xl max-h-[80vh] w-full overflow-hidden">
+            <div className="p-6 border-b border-gray-200 flex justify-between items-center">
+              <h3 className="text-xl font-bold text-gray-800">{selectedProgram.title}</h3>
+              <button
+                onClick={() => setShowModal(false)}
+                className="text-gray-500 hover:text-gray-700 text-2xl"
+              >
+                ×
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto max-h-96">
+              <div className="ai-generated-content">
+                <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
+                  {selectedProgram.content}
+                </div>
+              </div>
+            </div>
+            
+            <div className="p-6 border-t border-gray-200 flex justify-between items-center">
+              <div className="text-sm text-gray-500">
+                📅 Creato: {new Date(selectedProgram.created_at).toLocaleString('it-IT')}
+                {selectedProgram.generated_by_ai && <span className="ml-4">🤖 Generato con AI</span>}
+              </div>
+              <div className="flex space-x-3">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(selectedProgram.content);
+                    alert('Programma copiato negli appunti!');
+                  }}
+                  className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors"
+                >
+                  📋 Copia
+                </button>
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors"
+                >
+                  Chiudi
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 // Main App Component
 function App() {
   const [showLogin, setShowLogin] = useState(false);
