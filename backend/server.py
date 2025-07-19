@@ -219,7 +219,10 @@ async def create_campaign(campaign: Campaign):
         campaign_dict['id'] = str(uuid.uuid4())
         campaign_dict['created_at'] = datetime.utcnow()
         
-        campaigns_collection.insert_one(campaign_dict)
+        result = campaigns_collection.insert_one(campaign_dict)
+        
+        # Remove MongoDB _id from response
+        campaign_dict.pop('_id', None)
         
         return {"success": True, "campaign": campaign_dict}
     except Exception as e:
