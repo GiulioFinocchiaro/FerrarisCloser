@@ -587,6 +587,7 @@ const Dashboard = () => {
         {activeTab === 'overview' && <OverviewTab stats={stats} user={user} />}
         {activeTab === 'ai-program' && <AIGeneratorTab user={user} />}
         {activeTab === 'campaigns' && <CampaignsTab user={user} />}
+        {activeTab === 'programs' && <ProgramsTab user={user} />}
         {activeTab === 'candidates' && <CandidatesTab candidates={candidates} fetchCandidates={fetchCandidates} user={user} />}
       </main>
     </div>
