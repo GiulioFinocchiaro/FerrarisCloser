@@ -101,3 +101,172 @@
 #====================================================================================================
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
+
+user_problem_statement: "Testare completamente il backend dell'app di gestione lista elettorale scolastica. Verificare endpoints base, autenticazione, gestione candidati, campagne, generazione AI programmi elettorali, e dashboard."
+
+backend:
+  - task: "Server Status Check"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "Server is running and serving responses. Root endpoint serves frontend HTML which is expected behavior in this setup."
+
+  - task: "User Registration API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "POST /api/auth/register working correctly. Successfully registers users with all required fields (email, password, name, role) and returns proper response with user data and token."
+
+  - task: "User Login API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "POST /api/auth/login working correctly. Successfully authenticates users and returns user data with new token."
+
+  - task: "Create Candidate API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 1
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "Initial test failed due to MongoDB ObjectId serialization issue."
+      - working: true
+        agent: "testing"
+        comment: "Fixed ObjectId serialization issue by removing _id field from response. POST /api/candidates now working correctly."
+
+  - task: "Get Candidates API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/candidates working correctly. Returns list of candidates with proper JSON serialization."
+
+  - task: "Get Candidate by ID API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/candidates/{id} working correctly. Returns specific candidate data when valid ID provided."
+
+  - task: "Create Campaign API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "POST /api/campaigns working correctly. Successfully creates campaigns with events and materials arrays."
+
+  - task: "Get Candidate Campaigns API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/campaigns/{candidate_id} working correctly. Returns campaigns for specific candidate."
+
+  - task: "AI Program Generation API"
+    implemented: true
+    working: false
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "testing"
+        comment: "POST /api/generate-program fails due to missing GEMINI_API_KEY. This is expected as it requires third-party API configuration. The endpoint structure and error handling are working correctly."
+
+  - task: "Save Program API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "POST /api/programs working correctly. Successfully saves electoral programs with proper data structure."
+
+  - task: "Get Candidate Programs API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/programs/{candidate_id} working correctly. Returns programs for specific candidate."
+
+  - task: "Dashboard Stats API"
+    implemented: true
+    working: true
+    file: "/app/backend/server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "testing"
+        comment: "GET /api/dashboard/stats working correctly. Returns all required statistics: total_candidates, total_campaigns, active_campaigns, total_programs."
+
+frontend:
+  # Frontend testing not performed as per instructions
+
+metadata:
+  created_by: "testing_agent"
+  version: "1.0"
+  test_sequence: 1
+  run_ui: false
+
+test_plan:
+  current_focus: []
+  stuck_tasks: []
+  test_all: false
+  test_priority: "high_first"
+
+agent_communication:
+  - agent: "testing"
+    message: "Completed comprehensive backend testing. Fixed critical ObjectId serialization issue. 11/12 endpoints working correctly. Only AI Program Generation fails due to missing third-party API key which is expected. Backend is fully functional for core features."
