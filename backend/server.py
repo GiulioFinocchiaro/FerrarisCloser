@@ -10,7 +10,7 @@ import uuid
 from typing import Dict, List, Optional
 from pydantic import BaseModel
 import asyncio
-from emergent.llm.chat import LlmChat, UserMessage
+#from emergent.llm.chat import LlmChat, UserMessage
 
 # Enhanced logging
 logging.basicConfig(level=logging.INFO)
@@ -230,57 +230,58 @@ async def create_campaign(campaign: Campaign):
         raise HTTPException(status_code=500, detail="Errore interno del server")
 
 # AI Program Generation - THE KILLER FEATURE!
-@app.post("/api/generate-program")
-async def generate_electoral_program(request: ProgramGenerationRequest):
-    try:
-        if not GEMINI_API_KEY:
-            raise HTTPException(status_code=500, detail="API Key Gemini non configurata")
+
+# @app.post("/api/generate-program")
+# async def generate_electoral_program(request: ProgramGenerationRequest):
+#     try:
+#         if not GEMINI_API_KEY:
+#             raise HTTPException(status_code=500, detail="API Key Gemini non configurata")
         
-        # Create AI chat instance
-        chat = LlmChat(
-            api_key=GEMINI_API_KEY,
-            session_id=f"program-gen-{uuid.uuid4()}",
-            system_message="""Sei un esperto consulente politico per elezioni studentesche italiane. 
-            Crei programmi elettorali coinvolgenti, realistici e specifici per studenti delle scuole superiori.
-            Il programma deve essere professionale ma accessibile agli studenti, con proposte concrete e realizzabili."""
-        ).with_model("gemini", "gemini-2.5-pro-preview-05-06").with_max_tokens(4000)
+#         Create AI chat instance
+#         chat = LlmChat(
+#             api_key=GEMINI_API_KEY,
+#             session_id=f"program-gen-{uuid.uuid4()}",
+#             system_message="""Sei un esperto consulente politico per elezioni studentesche italiane. 
+#             Crei programmi elettorali coinvolgenti, realistici e specifici per studenti delle scuole superiori.
+#             Il programma deve essere professionale ma accessibile agli studenti, con proposte concrete e realizzabili."""
+#         ).with_model("gemini", "gemini-2.5-pro-preview-05-06").with_max_tokens(4000)
         
-        # Generate program content
-        prompt = f"""
-        Crea un programma elettorale completo per le elezioni studentesche per:
-        - Candidato: {request.candidate_name}
-        - Anno scolastico: {request.class_year}
-        - Principali questioni: {', '.join(request.main_issues)}
-        - Valori personali: {', '.join(request.personal_values)}
-        - Contesto scolastico: {request.school_context}
+#         Generate program content
+#         prompt = f"""
+#         Crea un programma elettorale completo per le elezioni studentesche per:
+#         - Candidato: {request.candidate_name}
+#         - Anno scolastico: {request.class_year}
+#         - Principali questioni: {', '.join(request.main_issues)}
+#         - Valori personali: {', '.join(request.personal_values)}
+#         - Contesto scolastico: {request.school_context}
         
-        Il programma deve includere:
-        1. Titolo accattivante
-        2. Presentazione del candidato
-        3. Visione per la scuola
-        4. 5-7 proposte concrete e specifiche
-        5. Conclusione motivante
+#         Il programma deve includere:
+#         1. Titolo accattivante
+#         2. Presentazione del candidato
+#         3. Visione per la scuola
+#         4. 5-7 proposte concrete e specifiche
+#         5. Conclusione motivante
         
-        Scrivi in italiano, stile professionale ma giovanile. Massimo 1500 parole.
-        """
+#         Scrivi in italiano, stile professionale ma giovanile. Massimo 1500 parole.
+#         """
         
-        user_message = UserMessage(text=prompt)
-        response = await chat.send_message(user_message)
+#         user_message = UserMessage(text=prompt)
+#         response = await chat.send_message(user_message)
         
-        return {
-            "success": True,
-            "program": {
-                "content": response,
-                "generated_at": datetime.utcnow().isoformat(),
-                "model_used": "gemini-2.5-pro-preview-05-06"
-            }
-        }
+#         return {
+#             "success": True,
+#             "program": {
+#                 "content": response,
+#                 "generated_at": datetime.utcnow().isoformat(),
+#                 "model_used": "gemini-2.5-pro-preview-05-06"
+#             }
+#         }
         
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Errore generazione programma AI: {e}")
-        raise HTTPException(status_code=500, detail=f"Errore generazione programma: {str(e)}")
+#     except HTTPException:
+#         raise
+#     except Exception as e:
+#         logger.error(f"Errore generazione programma AI: {e}")
+#         raise HTTPException(status_code=500, detail=f"Errore generazione programma: {str(e)}")
 
 @app.post("/api/programs")
 async def save_program(program: ElectoralProgram):
